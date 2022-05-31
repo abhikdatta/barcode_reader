@@ -1,0 +1,19 @@
+<annotation>
+    <folder>labelled</folder>
+    <filename>05102009105.jpg</filename>
+    <size>
+        <width>1600</width>
+        <height>1200</height>
+        <depth>3</depth>
+    </size>
+    <object>
+        <name>barcode</name>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>551</xmin>
+            <ymin>363</ymin>
+            <xmax>1139</xmax>
+            <ymax>807</ymax>
+        </bndbox>
+    </object>
+</annotation>

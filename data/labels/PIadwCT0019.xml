@@ -1,0 +1,19 @@
+<annotation>
+    <folder>labelled</folder>
+    <filename>PIadwCT0019.JPG</filename>
+    <size>
+        <width>2976</width>
+        <height>2232</height>
+        <depth>3</depth>
+    </size>
+    <object>
+        <name>barcode</name>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>673</xmin>
+            <ymin>665</ymin>
+            <xmax>2058</xmax>
+            <ymax>1436</ymax>
+        </bndbox>
+    </object>
+</annotation>

@@ -127,3 +127,18 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# raw data
+data/BarcodeDatasets/*
+data/labelled/*
+
+# Raw detection results
+results/raw/*
+
+# Mac temp file
+.DS_Store
+*/.DS_Store
+
+# Model files
+models/pretrained_coco/*.h5
+

@@ -1,0 +1,19 @@
+<annotation>
+    <folder>labelled</folder>
+    <filename>PICT0020.JPG</filename>
+    <size>
+        <width>2976</width>
+        <height>2232</height>
+        <depth>3</depth>
+    </size>
+    <object>
+        <name>barcode</name>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>698</xmin>
+            <ymin>528</ymin>
+            <xmax>2146</xmax>
+            <ymax>1769</ymax>
+        </bndbox>
+    </object>
+</annotation>
