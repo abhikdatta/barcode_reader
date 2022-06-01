@@ -142,3 +142,7 @@ results/raw/*
 # Model files
 models/pretrained_coco/*.h5
 
+# Temp word files
+~$*.docx
+
+
