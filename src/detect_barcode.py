@@ -127,6 +127,7 @@ def get_barcode_region_cnn(model, gray, tile_size=(64,64), save_detection_result
     positive_coords = []
     negative_coords = []
     mask = np.zeros(gray.shape, np.uint8)
+
     for index, (x,y) in enumerate(slices):
         sz = slices[(x,y)].shape
         if sz[0] == H and sz[1] == W:
@@ -143,9 +144,9 @@ def get_barcode_region_cnn(model, gray, tile_size=(64,64), save_detection_result
     mask_d = cv2.dilate(mask, kernel, iterations=10)
 
     if save_detection_results:
-        save_detections(gray, positive_coords, negative_coords, tile_size, os.path.join("../results/raw/", "detection_" + file_name))
-        plot(mask, os.path.join("../results/raw/", "detection_mask_" + file_name))
-        plot(mask_d, os.path.join("../results/raw/", "detection_mask_dilated" + file_name))
+        save_detections(gray, positive_coords, negative_coords, tile_size, os.path.join("../results/debug/", "detection_" + file_name))
+        plot(mask, os.path.join("../results/debug/", "detection_mask_" + file_name))
+        plot(mask_d, os.path.join("../results/debug/", "detection_mask_dilated" + file_name))
 
     # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     # closing = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
@@ -170,7 +171,7 @@ def get_barcode_region_cnn(model, gray, tile_size=(64,64), save_detection_result
                 selected_contours.append(contours)
 
     if save_detection_results:
-        save_selected_detections(selected_contours, mask_d, os.path.join("../results/raw/", "min_area_rect_" + file_name))
+        save_selected_detections(selected_contours, mask_d, os.path.join("../results/debug/", "min_area_rect_" + file_name))
 
     return cropped_barcode_regions
 
@@ -251,15 +252,19 @@ if __name__ == "__main__":
     parser.add_argument("--classifier_type", help="The classifier type to use", type=str, choices=["cnn", "features"], default="cnn")
     parser.add_argument("--epoch", help="The model to use", type=int, default=1)
     parser.add_argument("--patch_size", help="Patch size to use during training", type=int, default=64)
+    parser.add_argument("--debug", help="Run in debug mode", action="store_true")
     args = parser.parse_args()
 
 
     if args.classifier_type == 'cnn':
         _model = load_model("../models/barcode_detector", args.epoch)
-        # _tile_size = (64,64)
         _tile_size = (args.patch_size, args.patch_size)
     else:
         _model = None
+
+    if args.debug:
+        if not os.path.isdir("../results/debug"):
+            os.makedirs("../results/debug")
 
     for name in ["Dataset1", "Dataset2"]:
     # for name in ["Dataset1"]:
@@ -277,15 +282,16 @@ if __name__ == "__main__":
                 cropped_barcode_regions = [cropped_barcode_reg]
             
             elif args.classifier_type == 'cnn':
-                cropped_barcode_regions = get_barcode_region_cnn(_model, gray, tile_size=_tile_size, save_detection_results=True, file_name=f)
+                cropped_barcode_regions = get_barcode_region_cnn(_model, gray, tile_size=_tile_size, save_detection_results=args.debug, file_name=f)
 
             else:
                 raise ValueError("Unknown classifier type")
 
             detected_barcodes = []
             for instance_index, cropped_barcode_reg in enumerate(cropped_barcode_regions):
-                show_barcode(cropped_barcode_reg, 
-                             outpath=os.path.join("../results/raw", name, "barcode_{}_".format(instance_index) + f))
+                if args.debug:
+                    show_barcode(cropped_barcode_reg, 
+                                 outpath=os.path.join("../results/debug", "barcode_{}_".format(instance_index) + f))
 
                 _detected_barcodes = decode(cropped_barcode_reg)
                 detected_barcodes.extend(_detected_barcodes)

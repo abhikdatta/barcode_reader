@@ -133,7 +133,7 @@ data/BarcodeDatasets/*
 data/labelled/*
 
 # Raw detection results
-# results/raw/*
+# results/debug/*
 
 # Mac temp file
 .DS_Store
