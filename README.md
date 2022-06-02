@@ -13,7 +13,7 @@ To retrain model use one the following command: <br>
 this script uses relative paths, therefore kindly execute it from barcode_reader/src/
 
 To run barcode detection use one of the following command: <br>
-`python detect_barcode.py --classifier_type cnn --epoch 197  --patch_size 64` <br>
+`python detect_barcode.py --classifier_type cnn --epoch 192  --patch_size 64` <br>
 `python detect_barcode.py --classifier_type cnn --epoch 194  --patch_size 80`
 
 this script uses relative paths, therefore kindly execute it from barcode_reader/src/
