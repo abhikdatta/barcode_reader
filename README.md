@@ -1,6 +1,4 @@
 # barcode_reader
-A project for detecting and decoding 1D-barcodes in images
-
 This project is for evaluating 1D barcode detection strategies and not for production.
 
 The current implementation approach is described in [explanation.pdf](https://github.com/abhikdatta/barcode_reader/blob/main/explanation.pdf)
