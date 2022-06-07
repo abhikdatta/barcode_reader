@@ -40,13 +40,15 @@ def extract_features(hull):
     features = {'mean_intensity': mean_intensity[0], 
                 'area': area, 
                 'aspect_ratio': aspect_ratio, 
-                'angle': angle}
+                'angle': angle,
+                'length': max(width, height)}
     
     return features
 
 
 def classify(feats):
-    if feats['mean_intensity'] < 100 and feats['area'] > 1500 and feats['aspect_ratio'] > 10.0:
+    # if feats['mean_intensity'] < 100 and feats['area'] > 1500 and feats['aspect_ratio'] > 10.0:
+    if feats['length'] > 100.0 and feats['aspect_ratio'] > 10.0:
         return 1
     else:
         return 0
@@ -67,11 +69,6 @@ def get_rotated_cropped_image(image, rect):
     x2 = max(Xs)
     y2 = max(Ys)
 
-    rotated = False
-    if angle < -45:
-        angle += 90
-        rotated = True
-
     center = (int((x1+x2)/2), int((y1+y2)/2))
     size = (int(x2-x1), int(y2-y1))
 
@@ -80,12 +77,15 @@ def get_rotated_cropped_image(image, rect):
     cropped_barcode_reg = cv2.getRectSubPix(img_copy, size, center)
     cropped_barcode_reg = cv2.warpAffine(cropped_barcode_reg, rotation_matrix, size)
     
-    cropped_width = width if not rotated else height 
-    cropped_height = height if not rotated else width
+    cropped_width = width
+    cropped_height = height
 
     cropped_barcode_reg_tight = cv2.getRectSubPix(cropped_barcode_reg, 
                                                   (int(cropped_width), int(cropped_height)), 
                                                   (size[0]/2, size[1]/2))
+
+    if cropped_barcode_reg_tight.shape[0] > cropped_barcode_reg_tight.shape[1]:
+        cropped_barcode_reg_tight = cv2.rotate(cropped_barcode_reg_tight, cv2.ROTATE_90_CLOCKWISE)
 
     return cropped_barcode_reg_tight
 
@@ -158,7 +158,7 @@ def get_barcode_region_cnn(model, gray, tile_size=(64,64), save_detection_result
         selected_contours = []
 
     labeled_image, count = skimage.measure.label(mask_d, connectivity=2, return_num=True)
-    for label in range(1, count):
+    for label in range(1, count+1):
         mask_i = np.zeros((labeled_image.shape[0], labeled_image.shape[1]), dtype=np.uint8)
         mask_i[labeled_image == label] = 1
         area = np.sum(mask_i)
@@ -166,7 +166,13 @@ def get_barcode_region_cnn(model, gray, tile_size=(64,64), save_detection_result
             contours, hierarchy = cv2.findContours(mask_i, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             rect = cv2.minAreaRect(contours[0])
             cropped_barcode_reg = get_rotated_cropped_image(gray, rect)
-            cropped_barcode_regions.append(cropped_barcode_reg)
+
+            _cropped_barcode_regions = [cropped_barcode_reg, 
+                                        cropped_barcode_reg[::-1,:],
+                                        cropped_barcode_reg[:,::-1],
+                                        cropped_barcode_reg[::-1,::-1]]
+
+            cropped_barcode_regions.extend(_cropped_barcode_regions)
             if save_detection_results:
                 selected_contours.append(contours)
 
